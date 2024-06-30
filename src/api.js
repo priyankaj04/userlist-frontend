@@ -3,10 +3,12 @@ const API_URL  ='http://localhost:8000/api'
 
 export const getUserList = (userid) => {
     const url = API_URL + '/get/' + userid + '/';
+    const token = sessionStorage.getItem('token');
     const fetchOptions = {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
         },
     };
     return fetch(url, fetchOptions)
@@ -34,10 +36,12 @@ export const verifyUser = (reqbody) => {
 
 export const AddFriend = (reqbody) => {
     const url = API_URL + '/add/';
+    const token = sessionStorage.getItem('token');
     const fetchOptions = {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(reqbody)
     };
@@ -49,11 +53,13 @@ export const AddFriend = (reqbody) => {
 }
 
 export const DeleteFriend = (userid, friendid) => {
-    const url = API_URL + '/delete/'+userid+'/'+friendid+'/';
+    const url = API_URL + '/delete/' + userid + '/' + friendid + '/';
+    const token = sessionStorage.getItem('token');
     const fetchOptions = {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
         },
     };
     return fetch(url, fetchOptions)
@@ -64,11 +70,13 @@ export const DeleteFriend = (userid, friendid) => {
 }
 
 export const DeleteUser = (userid) => {
-    const url = API_URL + '/delete/'+userid+'/';
+    const url = API_URL + '/delete/' + userid + '/';
+    const token = sessionStorage.getItem('token');
     const fetchOptions = {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
         },
     };
     return fetch(url, fetchOptions)
@@ -80,10 +88,12 @@ export const DeleteUser = (userid) => {
 
 export const EditUserName = (reqbody) => {
     const url = API_URL + '/edit/';
+    const token = sessionStorage.getItem('token');
     const fetchOptions = {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(reqbody)
     };

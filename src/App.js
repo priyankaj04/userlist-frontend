@@ -16,9 +16,9 @@ function App() {
   const [userList, setUserList] = useState([])
 
   useEffect(() => {
-    console.log(userid)
+    console.log(userid);
     if (userid) {
-      GetUserDetails()
+      GetUserDetails();
     }
   }, [userid, fetch])
 
@@ -41,6 +41,7 @@ function App() {
     verifyUser(reqbody).then((res) => {
       if (res.status) {
         setUserid(res.data?.userid)
+        sessionStorage.setItem('token', res.token);
         sessionStorage.setItem('userid', res.data?.userid);
       } else {
         toast.error(res.message);
@@ -74,6 +75,7 @@ function App() {
   const handleLogout = () => {
     sessionStorage.removeItem('name');
     sessionStorage.removeItem('userid');
+    sessionStorage.removeItem('token');
     setUsername('');
     setUserid(null)
   }
