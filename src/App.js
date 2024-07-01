@@ -1,7 +1,6 @@
-import logo from './logo.svg';
 import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import { getUserList, verifyUser, AddFriend, DeleteFriend, EditUserName, DeleteUser } from './api';
+import { getUserList, verifyUser, AddFriend, DeleteFriend, EditUserName, DeleteUser, createUser } from './api';
 
 
 function App() {
@@ -9,18 +8,16 @@ function App() {
   const Getuserid = sessionStorage.getItem('userid');
   const [username, setUsername] = useState(GetName ?? '');
   const [userid, setUserid] = useState(Getuserid ?? null);
-  const [fetch, setFetch] = useState(false);
   const [toggle, setToggle] = useState('friendslist');
   const [nonFriends, setNonfriends] = useState([]);
   const [requests, setRequests] = useState([]);
   const [userList, setUserList] = useState([])
 
   useEffect(() => {
-    console.log(userid);
     if (userid) {
       GetUserDetails();
     }
-  }, [userid, fetch])
+  }, [userid])
 
   const GetUserDetails = () => {
     getUserList(userid).then((res) => {
@@ -37,12 +34,33 @@ function App() {
   }
 
   const VerifyUser = (username) => {
-    const reqbody = { username: username }
-    verifyUser(reqbody).then((res) => {
-      if (res.status) {
+    verifyUser(username).then((res) => {
+      if (res.status === 1) {
+        toast.success("Successfully login!");
         setUserid(res.data?.userid)
+        sessionStorage.setItem('name', username);
+        setUsername(username);
         sessionStorage.setItem('token', res.token);
         sessionStorage.setItem('userid', res.data?.userid);
+      } else if (res.status === 2) {
+        const confirm = window.confirm('The user does not exist! Please try with a different name. Would you like me to create a new user instead?')
+        if (confirm) {
+          const reqbody = { username: username }
+          createUser(reqbody).then((resp) => {
+            if (resp.status) {
+              toast.success("Successfully login!");
+              setUserid(resp.data?.userid)
+              sessionStorage.setItem('name', username);
+              setUsername(username);
+              sessionStorage.setItem('token', resp.token);
+              sessionStorage.setItem('userid', resp.data?.userid);
+            } else {
+              toast.error(resp.message);
+            }
+          })
+        } else {
+          toast.error('Please try with different name!');
+        }
       } else {
         toast.error(res.message);
       }
@@ -85,8 +103,6 @@ function App() {
     const [username1, setUsername1] = useState('');
 
     const handleJoin = () => {
-      sessionStorage.setItem('name', username1);
-      setUsername(username1);
       VerifyUser(username1)
     }
 
@@ -167,14 +183,14 @@ function App() {
 
     const handleDeleteUser = () => {
       const confirm = window.confirm("Are you sure?");
-      if(confirm){
+      if (confirm) {
         DeleteUser(userid).then((res) => {
-          if(res.status){
+          if (res.status) {
             toast.success("User is deleted!")
             sessionStorage.clear();
             setUserid(null);
             setUsername('');
-          } else{
+          } else {
             toast.error(res.message)
           }
         })
@@ -191,7 +207,7 @@ function App() {
                   <input className=" mb-2 w-[200px] px-4 py-2 border rounded-xl text-sm focus:outline-none focus:ring-0" onChange={(e) => setUsname(e.target.value)} value={usname}></input>
               }
             </div>
-            <div className='flex gap-2'> 
+            <div className='flex gap-2'>
               {
                 toggleedit ?
                   <button onClick={() => { handleEditUSname() }} className="px-5 py-1 text-[#3A6EDE] rounded-md active:bg-blue-50">
@@ -257,7 +273,12 @@ function App() {
 
   return (
     <div className="App">
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          success: { style: { background: "green", color: 'white' } },
+          error: { style: { background: "red", color: 'white' } },
+        }}
+      />
       {
         !username ? <LoginCard /> : <Home />
       }

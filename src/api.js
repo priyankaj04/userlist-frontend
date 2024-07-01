@@ -1,4 +1,4 @@
-const API_URL  ='http://localhost:8000/api'
+const API_URL = 'http://localhost:8000/api'
 
 
 export const getUserList = (userid) => {
@@ -18,8 +18,23 @@ export const getUserList = (userid) => {
         });
 }
 
-export const verifyUser = (reqbody) => {
-    const url = API_URL + '/verfiy/';
+export const verifyUser = (username) => {
+    const url = API_URL + '/verfiy/' + username + '/';
+    const fetchOptions = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    };
+    return fetch(url, fetchOptions)
+        .then((response) => response.json())
+        .catch((error) => {
+            console.error(error.message)
+        });
+}
+
+export const createUser = (reqbody) => {
+    const url = API_URL + '/create/';
     const fetchOptions = {
         method: "POST",
         headers: {
